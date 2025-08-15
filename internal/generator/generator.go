@@ -30,7 +30,7 @@ func Generate(cfg config.Config) error {
 	if err := os.MkdirAll(basePath, 0755); err != nil {
 		return errors.Join(ErrCreatingOutputDirectory, err)
 	}
-	err = generateServer(basePath, templates, cfg.MCPGen)
+	err = generateServer(basePath, templates, cfg)
 
 	if err != nil {
 		return errors.Join(ErrGeneratingServer, err)

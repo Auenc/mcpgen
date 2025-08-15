@@ -11,22 +11,23 @@ import (
 	"github.com/auenc/mcpgen/internal/config"
 )
 
-//go:embed templates/server-setup.tmpl
-var serverSetupTmpl embed.FS
-
 // generateServer uses server-setup.tmpl and writes to internal/mcp/{{.Package}}/server.go
-func generateServer(basePath string, templates embed.FS, cfg config.ProjectConfig) error {
-	fmt.Println("generating server setup")
+func generateServer(basePath string, templates embed.FS, cfg config.Config) error {
 	outPath := filepath.Join(basePath, "server.go")
 
-	fmt.Println("parsing embedded template")
-	tmplContent, err := serverSetupTmpl.ReadFile("templates/server-setup.tmpl")
+	tmplContent, err := templates.ReadFile("templates/server-setup.tmpl")
 	if err != nil {
 		return err
 	}
-	tmpl, err := template.New("server-setup").Parse(string(tmplContent))
+	tmpl := template.New("server-setup").Funcs(templateFuncMap)
+	tmpl, err = tmpl.Parse(string(tmplContent))
 	if err != nil {
 		return errors.Join(ErrCreatingFile, err)
+	}
+
+	fmt.Printf("CREATE %s\n", outPath)
+	if cfg.DryRun {
+		return nil
 	}
 
 	// Create output file
@@ -35,7 +36,6 @@ func generateServer(basePath string, templates embed.FS, cfg config.ProjectConfi
 		return err
 	}
 	defer f.Close()
-	fmt.Println("writing file")
 	// Execute template with config
-	return tmpl.Execute(f, cfg)
+	return tmpl.Execute(f, cfg.MCPGen)
 }
