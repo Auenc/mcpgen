@@ -1,0 +1,13 @@
+*
+!.gitignore
+!LICENSE
+!README.md
+
+!go.mod
+!go.sum
+!Makefile
+
+!cmd
+!cmd/**
+!internal
+!internal/**
