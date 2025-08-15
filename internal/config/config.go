@@ -7,9 +7,11 @@ import (
 )
 
 type ProjectConfig struct {
-	Title   string `yaml:"title"`
-	Name    string `yaml:"name"`
-	Version string `yaml:"version"`
+	Title     string `yaml:"title"`
+	Name      string `yaml:"name"`
+	Version   string `yaml:"version"`
+	Package   string `yaml:"package"`
+	OutputDir string `yaml:"outputDir"`
 }
 
 type Config struct {

@@ -26,7 +26,11 @@ var (
 			// Adding to config to avoid having to pass a lot of params
 			cfg.DryRun = isDryRun
 
-			generator.Generate(*cfg)
+			err = generator.Generate(*cfg)
+			if err != nil {
+				fmt.Printf("Error generating files: %v\n", err)
+				os.Exit(1)
+			}
 		},
 	}
 )

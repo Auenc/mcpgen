@@ -1,0 +1,32 @@
+package {{ .Package }}
+
+import (
+	"context"
+    "net/http"
+    "log/slog"
+
+    "github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+func StartServer(ctx context.Context, listenAddr *string) error {
+    server := mcp.NewServer(&mcp.Implementation{Name: "{{ .Name }}", Version: "{{ .Version }}"}, nil)
+
+    if listenAddr == nil {
+        slog.Info("Starting server using stdio")
+        return server.Run(ctx, mcp.NewStdioTransport())
+    }
+
+    httpServer := &http.Server{
+        Addr: *listenAddr,
+        Handler: mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+            return server
+        }, nil),
+    }
+    go func() {
+        <-ctx.Done()
+        _ = httpServer.Shutdown(context.Background())
+    }()
+
+    slog.Info("MCP server started", "addr", *listenAddr)
+    return httpServer.ListenAndServe()
+}
